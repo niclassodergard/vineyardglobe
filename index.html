@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="description" content="Vineyard Globe: explore the world's wine regions on an interactive atlas globe." />
+    <title>Vineyard Globe</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='44' fill='%23efe0b5' stroke='%234a3320' stroke-width='5'/%3E%3Ccircle cx='50' cy='50' r='14' fill='%238c1c3b'/%3E%3C/svg%3E" />
+  </head>
+  <body>
+    <div id="globe" aria-label="Interactive globe of wine regions"></div>
+    <div class="frame" aria-hidden="true"></div>
+
+    <header class="topbar">
+      <div class="brand">
+        <h1>Vineyard Globe</h1>
+        <p>An atlas of the world's wine regions</p>
+      </div>
+      <div class="tools">
+        <div class="search">
+          <input id="search" type="search" placeholder="Search region, country or grape…" autocomplete="off" aria-label="Search wine regions" />
+          <ul id="results" class="results" hidden></ul>
+        </div>
+        <div class="filter">
+          <button id="filter-toggle" class="btn" aria-expanded="false" aria-controls="filter-pop">Grapes <span id="filter-count"></span></button>
+          <div id="filter-pop" class="popover" hidden>
+            <div class="popover-head">
+              <strong>Show regions growing…</strong>
+              <button id="filter-clear" class="link">Clear</button>
+            </div>
+            <div id="grape-list" class="chips"></div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div id="tooltip" class="tooltip" hidden></div>
+
+    <aside id="drawer" class="drawer" aria-hidden="true" aria-label="Wine region details">
+      <button id="drawer-close" class="close" aria-label="Close">×</button>
+      <div id="drawer-body" class="drawer-body"></div>
+    </aside>
+
+    <div id="loading" class="loading"><div><span class="spinner"></span><p>Unrolling the map…</p></div></div>
+    <p class="hint">Drag to turn · scroll or pinch to zoom · click a marker</p>
+    <footer class="credit">Map data: <a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener">Natural Earth</a> (public domain)</footer>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
