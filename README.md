@@ -4,10 +4,11 @@ An interactive 3D atlas of the world's wine regions, built with [three.js](https
 Spin and zoom the globe, click a marker, and read about the region's typical grapes, wines and character.
 
 - Vintage-atlas look: a parchment globe with ink coastlines, painted at runtime from public-domain Natural Earth data (no image assets)
-- 45 major wine regions, each one a markdown file in [`content/regions/`](content/regions)
+- 100 major wine regions, each one a markdown file in [`content/regions/`](content/regions), plus 50 grape pages in [`content/grapes/`](content/grapes)
 - Search by region, country or grape; filter markers by grape
 - Works on touch devices (drag, pinch to zoom, bottom-sheet panel)
-- Deep links: `#/region/bordeaux` opens a region directly
+- Flash-card quiz: rounds of ten multiple-choice cards about regions and grapes, generated at random from the content files (no extra authoring). Filter by subject, country and difficulty; the globe flies to the answer once you have answered; progress is kept in your browser's localStorage
+- Deep links: `#/region/bordeaux`, `#/grape/syrah` and `#/quiz` open directly
 
 ## Develop
 

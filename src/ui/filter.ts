@@ -15,6 +15,8 @@ export interface FilterControl {
   setOnly(grape: string): void;
   /** Remove every selected grape. */
   clear(): void;
+  /** Re-send the current filter to the globe (undoes any temporary highlight). */
+  reapply(): void;
   /** Whether a region is visible under the current filter. */
   isVisible(slug: string): boolean;
 }
@@ -81,6 +83,7 @@ export function setupFilter(
       buttons.forEach((b) => b.setAttribute('aria-pressed', 'false'));
       update();
     },
+    reapply: update,
     isVisible: (slug) => selected.size === 0 || (applyGrapeFilter(regions, selected)?.has(slug) ?? true),
     setOnly(grape) {
       selected.clear();

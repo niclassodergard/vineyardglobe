@@ -10,7 +10,10 @@ import { loadRegions } from './content/loadRegions';
 import type { Grape, Region } from './content/types';
 import { Globe } from './globe/scene';
 import { setupFilter, regionGrapes } from './ui/filter';
+import { buildIndex } from './quiz/index';
+import type { SubjectRef } from './quiz/types';
 import { Panel } from './ui/panel';
+import { Quiz } from './ui/quiz';
 import { setupSearch } from './ui/search';
 
 const regions = loadRegions();
@@ -30,6 +33,8 @@ const panel: Panel = new Panel(
     },
     onRegion: (slug) => selectRegion(regions.find((r) => r.slug === slug) ?? null),
     onBack: () => selectRegion(currentRegion),
+    onQuiz: (subject) => openQuiz(subject),
+    onQuizBack: () => openQuiz(),
   },
   (name) => grapeByName.has(name),
 );
@@ -66,6 +71,50 @@ const filter = setupFilter(
   },
 );
 
+/** True while the globe shows a quiz highlight that must be undone. */
+let quizHighlight = false;
+function clearQuizHighlight(): void {
+  if (!quizHighlight) return;
+  quizHighlight = false;
+  filter.reapply();
+}
+
+const quiz = new Quiz(buildIndex(regions, grapes), {
+  mount: () => panel.openQuiz(),
+  isActive: () => panel.current === 'quiz',
+  onReveal(card) {
+    if (card.highlight) {
+      quizHighlight = true;
+      globe.setActiveRegions(new Set(card.highlight));
+    } else clearQuizHighlight();
+    globe.setSelected(card.flyTo ?? null);
+    if (card.flyTo) globe.flyTo(card.flyTo);
+  },
+  onReset() {
+    clearQuizHighlight();
+    globe.setSelected(null);
+  },
+  onLearn(subject) {
+    if (subject.kind === 'region') selectRegion(regions.find((r) => r.slug === subject.slug) ?? null, true);
+    else {
+      const g = grapes.find((x) => x.slug === subject.slug);
+      if (g) openGrape(g.name, null, true, true);
+    }
+  },
+});
+
+function openQuiz(focus?: SubjectRef): void {
+  tooltip.hidden = true;
+  clearQuizHighlight();
+  filter.clear();
+  currentRegion = null;
+  globe.setSelected(null);
+  quiz.open(focus);
+  setHash('#/quiz');
+  syncView();
+}
+document.getElementById('quiz-open')!.addEventListener('click', () => openQuiz());
+
 function syncView(): void {
   const c = panel.coverage();
   globe.setViewShift(c.x, c.y);
@@ -76,44 +125,50 @@ function setHash(hash: string): void {
   if (location.hash !== hash) history.replaceState(null, '', hash || location.pathname + location.search);
 }
 
-function selectRegion(region: Region | null): void {
+function selectRegion(region: Region | null, fromQuiz = false): void {
   tooltip.hidden = true;
+  clearQuizHighlight();
   if (!region) return closePanel();
   // Don't show a region that the active grape filter hides.
   if (!filter.isVisible(region.slug)) filter.clear();
   currentRegion = region;
-  panel.openRegion(region);
+  panel.openRegion(region, fromQuiz);
   globe.flyTo(region.slug);
   globe.setSelected(region.slug);
   setHash(`#/region/${region.slug}`);
   syncView();
 }
 
-function openGrape(name: string, from: Region | null, focus = true): void {
+function openGrape(name: string, from: Region | null, focus = true, fromQuiz = false): void {
   const grape = grapeByName.get(name);
   if (!grape) return;
   tooltip.hidden = true;
+  clearQuizHighlight();
   currentRegion = from;
   const growing = regions.filter((r) => regionGrapes(r).includes(grape.name));
-  panel.openGrape(grape, growing, from, focus);
+  panel.openGrape(grape, growing, from, focus, fromQuiz);
   globe.setSelected(null);
   setHash(`#/grape/${grape.slug}`);
   syncView();
 }
 
 function closePanel(): void {
+  const wasQuiz = panel.current === 'quiz';
   tooltip.hidden = true;
+  clearQuizHighlight();
   currentRegion = null;
   panel.close();
   globe.setSelected(null);
   setHash('');
   syncView();
+  if (wasQuiz) document.getElementById('quiz-open')!.focus({ preventScroll: true });
 }
 
 setupSearch(regions, selectRegion);
 addEventListener('resize', syncView);
 
-function fromHash(): { region?: Region; grape?: Grape } {
+function fromHash(): { region?: Region; grape?: Grape; quiz?: boolean } {
+  if (location.hash === '#/quiz') return { quiz: true };
   const m = /^#\/(region|grape)\/([\w-]+)$/.exec(location.hash);
   if (!m) return {};
   return m[1] === 'region'
@@ -121,8 +176,10 @@ function fromHash(): { region?: Region; grape?: Grape } {
     : { grape: grapes.find((g) => g.slug === m[2]) };
 }
 function applyHash(): void {
-  const { region, grape } = fromHash();
-  if (region && panel.current !== `region:${region.slug}`) selectRegion(region);
+  const { region, grape, quiz: wantsQuiz } = fromHash();
+  if (wantsQuiz) {
+    if (panel.current !== 'quiz') openQuiz();
+  } else if (region && panel.current !== `region:${region.slug}`) selectRegion(region);
   else if (grape && panel.current !== `grape:${grape.slug}`) {
     filter.setOnly(grape.name);
     openGrape(grape.name, null);

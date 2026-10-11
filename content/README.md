@@ -18,3 +18,11 @@ Frontmatter fields:
 
 The markdown body is shown in the info panel. Run `npm run validate` after editing.
 Changes show up immediately in `npm run dev`; for production, rebuild with `npm run build`.
+
+## Flash cards
+
+The quiz builds its cards from the frontmatter of these files, so there is nothing extra to write.
+Cards use `country`, `grapes` and `lat`/`lon` of regions, and `synonyms`, `origin`, `aromas` and `structure` of grapes.
+Keep those fields accurate and consistent: wrong answers are chosen so they are false according to the data
+(for example, a wrong grape is never one that any region of the same country lists), which only works if the lists are complete.
+`origin` should start with a single country, e.g. `France (Burgundy)`; origins such as "Central Europe" or "disputed" are skipped for origin cards.

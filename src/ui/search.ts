@@ -1,6 +1,5 @@
 import type { Region } from '../content/types';
-
-const norm = (s: string) => s.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
+import { norm } from '../util/text';
 
 export function matchRegions(regions: Region[], query: string): Region[] {
   const q = norm(query.trim());
