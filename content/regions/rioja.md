@@ -7,7 +7,7 @@ lon: -2.5
 subregions: [Rioja Alta, Rioja Alavesa, Rioja Oriental]
 grapes:
   red: [Tempranillo, Grenache, Graciano]
-  white: [Viura]
+  white: [Macabeo]
 styles: [Oak-aged reds, Crianza to Gran Reserva, White Rioja, Rosado]
 climate: Continental with Atlantic and Mediterranean influences
 ---

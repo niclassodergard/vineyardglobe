@@ -1,5 +1,5 @@
 import { parse as parseYaml } from 'yaml';
-import type { Region } from './types';
+import { LEVELS, type Grape, type Level, type Region } from './types';
 
 const FRONTMATTER = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/;
 
@@ -79,10 +79,42 @@ export function parseRegion(slug: string, raw: string): Region {
   };
 }
 
-export function assertUniqueSlugs(slugs: string[]): void {
+export function assertUniqueSlugs(slugs: string[], kind = 'region'): void {
   const seen = new Set<string>();
   for (const s of slugs) {
-    if (seen.has(s)) throw new Error(`Duplicate region slug: ${s}`);
+    if (seen.has(s)) throw new Error(`Duplicate ${kind} slug: ${s}`);
     seen.add(s);
   }
+}
+
+function level(v: unknown, field: string, file: string): Level {
+  if (typeof v === 'string' && (LEVELS as readonly string[]).includes(v)) return v as Level;
+  throw new Error(`${file}: "${field}" must be one of ${LEVELS.join(', ')}`);
+}
+
+/** Validates one grape file (content/grapes/<slug>.md). Throws with the file name on any problem. */
+export function parseGrape(slug: string, raw: string): Grape {
+  const file = `content/grapes/${slug}.md`;
+  const { data, body } = splitFrontmatter(raw, file);
+  if (data.color !== 'red' && data.color !== 'white') throw new Error(`${file}: "color" must be red or white`);
+  const aromas = strList(data.aromas, 'aromas', file);
+  if (aromas.length === 0) throw new Error(`${file}: "aromas" must list at least one flavour`);
+  const s = (data.structure ?? {}) as Record<string, unknown>;
+  if (typeof s !== 'object' || Array.isArray(s)) throw new Error(`${file}: "structure" must have acidity, tannin and body`);
+  if (!body) throw new Error(`${file}: body text is empty`);
+  return {
+    slug,
+    name: str(data.name, 'name', file),
+    color: data.color,
+    synonyms: strList(data.synonyms, 'synonyms', file),
+    origin: str(data.origin, 'origin', file),
+    aromas,
+    structure: {
+      acidity: level(s.acidity, 'structure.acidity', file),
+      tannin: level(s.tannin, 'structure.tannin', file),
+      body: level(s.body, 'structure.body', file),
+    },
+    pairings: strList(data.pairings, 'pairings', file),
+    body,
+  };
 }

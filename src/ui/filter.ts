@@ -10,7 +10,23 @@ export function applyGrapeFilter(regions: Region[], selected: Set<string>): Set<
   return new Set(regions.filter((r) => regionGrapes(r).some((g) => selected.has(g))).map((r) => r.slug));
 }
 
-export function setupFilter(regions: Region[], onChange: (slugs: Set<string> | null) => void): void {
+export interface FilterControl {
+  /** Select only this grape (used when a grape is clicked in a region's info). */
+  setOnly(grape: string): void;
+  /** Remove every selected grape. */
+  clear(): void;
+  /** Whether a region is visible under the current filter. */
+  isVisible(slug: string): boolean;
+}
+
+export function setupFilter(
+  regions: Region[],
+  onChange: (slugs: Set<string> | null) => void,
+  /** Called when the user toggles a grape chip in the selector. */
+  onToggle: (grape: string, selected: boolean) => void,
+  /** Called when the Clear button empties the selection. */
+  onClear: () => void,
+): FilterControl {
   const toggle = document.getElementById('filter-toggle')!;
   const pop = document.getElementById('filter-pop')!;
   const listEl = document.getElementById('grape-list')!;
@@ -23,6 +39,7 @@ export function setupFilter(regions: Region[], onChange: (slugs: Set<string> | n
   const grapes = [...tally.keys()].sort((a, b) => tally.get(b)! - tally.get(a)! || a.localeCompare(b));
 
   listEl.innerHTML = '';
+  const buttons = new Map<string, HTMLButtonElement>();
   for (const g of grapes) {
     const b = document.createElement('button');
     b.className = `chip ${reds.has(g) ? 'red' : 'white'} toggle`;
@@ -32,7 +49,9 @@ export function setupFilter(regions: Region[], onChange: (slugs: Set<string> | n
       selected.has(g) ? selected.delete(g) : selected.add(g);
       b.setAttribute('aria-pressed', String(selected.has(g)));
       update();
+      onToggle(g, selected.has(g));
     });
+    buttons.set(g, b);
     listEl.appendChild(b);
   }
 
@@ -48,6 +67,7 @@ export function setupFilter(regions: Region[], onChange: (slugs: Set<string> | n
     selected.clear();
     listEl.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', 'false'));
     update();
+    onClear();
   });
   document.addEventListener('pointerdown', (e) => {
     if (!pop.hidden && !(e.target as HTMLElement).closest('.filter')) {
@@ -55,4 +75,18 @@ export function setupFilter(regions: Region[], onChange: (slugs: Set<string> | n
       toggle.setAttribute('aria-expanded', 'false');
     }
   });
+  return {
+    clear() {
+      selected.clear();
+      buttons.forEach((b) => b.setAttribute('aria-pressed', 'false'));
+      update();
+    },
+    isVisible: (slug) => selected.size === 0 || (applyGrapeFilter(regions, selected)?.has(slug) ?? true),
+    setOnly(grape) {
+      selected.clear();
+      if (tally.has(grape)) selected.add(grape);
+      buttons.forEach((b, g) => b.setAttribute('aria-pressed', String(selected.has(g))));
+      update();
+    },
+  };
 }

@@ -164,3 +164,25 @@ input:focus-visible, button:focus-visible { outline: 2px solid var(--wine); outl
 @media (prefers-reduced-motion: reduce) {
   * { transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
+
+/* Grape pages and clickable grape chips */
+.chip.link-chip { cursor: pointer; font-family: inherit; }
+.chip.link-chip:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.swatch { display: inline-block; width: .7em; height: .7em; border-radius: 50%; margin-right: .3em; border: 1px solid var(--ink); vertical-align: -.05em; }
+.swatch.red { background: var(--wine); }
+.swatch.white { background: #e4cf7a; }
+.back { background: none; border: 0; padding: 0; margin: 0 0 10px; font: italic 1rem var(--serif-body); color: var(--wine); cursor: pointer; }
+.back:hover { text-decoration: underline; }
+.meters { display: grid; gap: 6px; margin-top: 8px; }
+.meter { display: grid; grid-template-columns: 4.5rem auto 1fr; align-items: center; gap: 10px; }
+.meter em { color: var(--ink-soft); font-size: .88rem; }
+.dots { display: inline-flex; gap: 5px; }
+.dots i { width: 13px; height: 13px; border-radius: 50%; border: 1px solid var(--ink); }
+.dots i.on { background: var(--wine); border-color: var(--wine); }
+.where { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.region-link {
+  width: 100%; display: flex; gap: 8px; align-items: baseline; text-align: left; padding: 7px 10px; font: inherit;
+  color: var(--ink); background: transparent; border: 0; border-bottom: 1px dotted var(--ink-soft); cursor: pointer;
+}
+.region-link span { color: var(--ink-soft); font-style: italic; margin-left: auto; font-size: .9rem; }
+.region-link:hover { background: rgba(140, 28, 59, .08); }

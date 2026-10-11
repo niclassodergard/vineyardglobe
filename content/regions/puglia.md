@@ -6,7 +6,7 @@ lat: 40.6
 lon: 17.3
 subregions: [Salice Salentino, Primitivo di Manduria, Castel del Monte, Salento, Gioia del Colle, Brindisi]
 grapes:
-  red: [Primitivo, Negroamaro, Nero di Troia]
+  red: [Zinfandel, Negroamaro, Nero di Troia]
   white: []
 styles: [Rich Primitivo reds, Negroamaro reds, Rosato]
 climate: Hot Mediterranean
@@ -15,7 +15,7 @@ climate: Hot Mediterranean
 Puglia forms the heel of Italy's boot, a long, largely flat and sunny region between the Adriatic and Ionian seas. It is one of Italy's largest wine-producing regions, long associated with bulk wine but now known for quality as well.
 
 ## Typical grapes
-Primitivo, genetically the same as California's Zinfandel and Croatia's Crljenak Kaštelanski, is the leading red. Negroamaro dominates the Salento peninsula. Nero di Troia (Uva di Troia) is important in the north, and Bombino Bianco is a common white.
+Zinfandel, known locally as Primitivo and genetically the same as Croatia's Crljenak Kaštelanski, is the leading red. Negroamaro dominates the Salento peninsula. Nero di Troia (Uva di Troia) is important in the north, and Bombino Bianco is a common white.
 
 ## Wine styles
 Primitivo makes ripe, full-bodied, high-alcohol reds with jammy dark fruit, and Primitivo di Manduria Dolce Naturale is a sweet DOCG style. Negroamaro gives earthy, spicy reds, and in Salice Salentino it is often blended with Malvasia Nera. Salento also has a long tradition of rosato, mostly from Negroamaro.
